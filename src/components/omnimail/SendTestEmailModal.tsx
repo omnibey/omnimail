@@ -51,7 +51,7 @@ export const SendTestEmailModal: React.FC<SendTestEmailModalProps> = ({
       } else {
         error(data.error || 'Failed to send test email');
       }
-    } catch (err: unknown) {
+    } catch {
       error('Error communicating with test sender');
     } finally {
       setLoading(false);
@@ -70,28 +70,28 @@ export const SendTestEmailModal: React.FC<SendTestEmailModalProps> = ({
       title: '2FA Verification Code',
       desc: 'One-time security OTP from OmniBey Auth',
       icon: ShieldCheck,
-      color: 'text-sky-400',
+      color: 'text-sky-500 dark:text-sky-400 bg-sky-50 dark:bg-slate-800',
     },
     {
       id: 'github',
       title: 'GitHub PR Notification',
       desc: 'Pull Request merged & CI build status update',
       icon: GitPullRequest,
-      color: 'text-purple-400',
+      color: 'text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-slate-800',
     },
     {
       id: 'receipt',
       title: 'Stripe SaaS Receipt',
       desc: 'Monthly subscription billing confirmation',
       icon: Receipt,
-      color: 'text-emerald-400',
+      color: 'text-emerald-500 dark:text-emerald-400 bg-emerald-50 dark:bg-slate-800',
     },
     {
       id: 'custom',
       title: 'Custom Test Message',
       desc: 'Specify your own sender and subject',
       icon: Edit3,
-      color: 'text-amber-400',
+      color: 'text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-slate-800',
     },
   ];
 
@@ -104,8 +104,8 @@ export const SendTestEmailModal: React.FC<SendTestEmailModalProps> = ({
       maxWidth="md"
     >
       <div className="space-y-4">
-        <div className="text-xs text-slate-400">
-          Sending to: <span className="font-mono text-white font-medium">{address}</span>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Sending to: <span className="font-mono text-slate-900 dark:text-white font-semibold">{address}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -116,21 +116,21 @@ export const SendTestEmailModal: React.FC<SendTestEmailModalProps> = ({
                 key={t.id}
                 type="button"
                 onClick={() => setTemplate(t.id)}
-                className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'bg-slate-800 border-sky-500/80 shadow-md shadow-sky-500/10'
-                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-800/40'
+                    ? 'bg-indigo-50/90 dark:bg-slate-800 border-indigo-500 dark:border-sky-500/80 shadow-md shadow-indigo-500/10'
+                    : 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/40'
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className={`p-2 rounded-lg bg-slate-800 ${t.color}`}>
+                  <div className={`p-2 rounded-lg ${t.color}`}>
                     <t.icon className="w-4 h-4" />
                   </div>
-                  {isSelected && <Check className="w-4 h-4 text-sky-400" />}
+                  {isSelected && <Check className="w-4 h-4 text-indigo-600 dark:text-sky-400" />}
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-white">{t.title}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">{t.desc}</div>
+                  <div className="text-xs font-semibold text-slate-900 dark:text-white">{t.title}</div>
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">{t.desc}</div>
                 </div>
               </button>
             );
@@ -138,31 +138,31 @@ export const SendTestEmailModal: React.FC<SendTestEmailModalProps> = ({
         </div>
 
         {template === 'custom' && (
-          <div className="space-y-2.5 pt-2 border-t border-slate-800 animate-in fade-in">
+          <div className="space-y-2.5 pt-2 border-t border-slate-200 dark:border-slate-800 animate-in fade-in">
             <div>
-              <label className="text-xs text-slate-300 block mb-1 font-medium">Sender Name / Email</label>
+              <label className="text-xs text-slate-700 dark:text-slate-300 block mb-1 font-medium">Sender Name / Email</label>
               <input
                 type="text"
                 placeholder="CEO <alex@enterprise.com>"
                 value={customSender}
                 onChange={(e) => setCustomSender(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
             <div>
-              <label className="text-xs text-slate-300 block mb-1 font-medium">Subject Line</label>
+              <label className="text-xs text-slate-700 dark:text-slate-300 block mb-1 font-medium">Subject Line</label>
               <input
                 type="text"
                 placeholder="Urgent: Partnership Opportunity"
                 value={customSubject}
                 onChange={(e) => setCustomSubject(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
           <Button variant="ghost" size="sm" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
