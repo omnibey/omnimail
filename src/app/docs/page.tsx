@@ -100,10 +100,22 @@ for _ in range(15):
         {/* Content Column */}
         <div className="lg:col-span-3 space-y-12 text-sm text-slate-700 dark:text-slate-300">
           {/* Base URL */}
-          <section className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-            <h3 className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider mb-2">Base URL</h3>
-            <div className="font-mono text-sm text-indigo-600 dark:text-sky-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-              https://omnibey.com/api
+          <section className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+            <div>
+              <h3 className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider mb-2">Base URL</h3>
+              <div className="font-mono text-sm text-indigo-600 dark:text-sky-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                https://omnibey.com/api/v1
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider mb-2">Authentication Header</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                Pass your API key in the header using either <code className="font-mono text-slate-900 dark:text-white">x-api-key</code> or <code className="font-mono text-slate-900 dark:text-white">Authorization: Bearer &lt;key&gt;</code>. Manage keys in your <a href="/dashboard/api-keys" className="text-indigo-600 dark:text-sky-400 underline font-semibold">Dashboard API Keys</a>.
+              </p>
+              <div className="font-mono text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                x-api-key: ob_live_8f93a90b4e2348a1928471b
+              </div>
             </div>
           </section>
 

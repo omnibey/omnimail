@@ -12,6 +12,7 @@ import {
   CreditCard,
   User,
   Settings,
+  Key,
   ShieldAlert,
   LogOut,
   Menu,
@@ -29,6 +30,7 @@ const navItems = [
   { label: 'Usage History', href: '/dashboard/history', icon: History },
   { label: 'Credits & Store', href: '/dashboard/credits', icon: Coins },
   { label: 'Payment Orders', href: '/dashboard/payments', icon: CreditCard },
+  { label: 'API Keys', href: '/dashboard/api-keys', icon: Key },
   { label: 'My Profile', href: '/dashboard/profile', icon: User },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];

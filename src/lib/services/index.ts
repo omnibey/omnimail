@@ -5,3 +5,5 @@ export * from './UserService';
 export * from './EmailService';
 export * from './AnalyticsService';
 export * from './CompatibilityService';
+export * from './ApiKeyService';
+export * from './AIService';
