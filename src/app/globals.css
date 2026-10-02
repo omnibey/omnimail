@@ -1,33 +1,42 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 6.5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 6.5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+  /* Light Mode Palette */
+  :root, html.light {
+    --bg-page: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-card-subtle: #f1f5f9;
+    --border-card: #e2e8f0;
+    --border-subtle: #cbd5e1;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-primary: #4f46e5;
+    --accent-hover: #4338ca;
+    --panel-glass: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Dark Mode Palette */
+  html.dark {
+    --bg-page: #090d16;
+    --bg-card: #0f172a;
+    --bg-card-subtle: #131b2e;
+    --border-card: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --accent-primary: #6366f1;
+    --accent-hover: #4f46e5;
+    --panel-glass: rgba(15, 23, 42, 0.8);
   }
 
   body {
-    background-color: #090d16;
-    color: #f1f5f9;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -37,43 +46,139 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgba(100, 116, 139, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(100, 116, 139, 0.5);
 }
 
-/* Glassmorphism utility */
+/* Glassmorphism utility with theme adaptation */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--panel-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-card);
 }
 
 .glass-card {
-  background: rgba(17, 24, 39, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+html.dark .glass-card {
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
 }
 
-.glow-blue {
-  box-shadow: 0 0 35px -5px rgba(56, 189, 248, 0.2);
+/* ==============================================================================
+   SUBTLE, HIGH-PERFORMANCE MICRO-ANIMATIONS
+   ============================================================================== */
+
+/* 1. Page Fade-In */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-page-fade {
+  animation: pageFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.glow-indigo {
-  box-shadow: 0 0 35px -5px rgba(99, 102, 241, 0.25);
+/* 2. Copy Success Pop */
+@keyframes copyPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.animate-copy-pop {
+  animation: copyPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 3. Email Generated Flash/Shimmer */
+@keyframes emailGeneratedShimmer {
+  0% {
+    background-position: -200% 0;
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: 200% 0;
+    opacity: 1;
+  }
+}
+.animate-email-generated {
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 0%, rgba(56, 189, 248, 0.25) 50%, rgba(99, 102, 241, 0.1) 100%);
+  background-size: 200% 100%;
+  animation: emailGeneratedShimmer 0.7s ease-out;
+}
+
+/* 4. Email Received Glow & Slide */
+@keyframes emailReceivedSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+.animate-email-received {
+  animation: emailReceivedSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 5. OTP Detection Glow & Pulse */
+@keyframes otpPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px -2px rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 25px 2px rgba(99, 102, 241, 0.5);
+    border-color: rgba(99, 102, 241, 0.8);
+  }
+}
+.animate-otp-pulse {
+  animation: otpPulseGlow 2.5s infinite ease-in-out;
+}
+
+/* 6. Loading Skeleton Shimmer */
+@keyframes skeletonWave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-skeleton {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.22) 50%, rgba(148, 163, 184, 0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeletonWave 1.6s infinite ease-in-out;
+  border-radius: 0.5rem;
+}
+
+/* 7. Expiration Countdown Ring Animation */
+.countdown-ring-circle {
+  transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
 }
 
 /* Email sandbox styling */
 .email-content-sandbox {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #e2e8f0;
   line-height: 1.6;
 }
 
@@ -89,8 +194,7 @@
 }
 
 .email-content-sandbox pre, .email-content-sandbox code {
-  background: #1e293b;
-  color: #38bdf8;
+  background: rgba(100, 116, 139, 0.15);
   padding: 2px 6px;
   border-radius: 4px;
 }
