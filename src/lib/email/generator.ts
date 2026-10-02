@@ -33,6 +33,10 @@ export function generateRandomMailboxAddress(domain: string = 'omnibey.com'): {
   };
 }
 
+export function generateRandomAddress(domain: string = 'mail.omnibey.com'): string {
+  return generateRandomMailboxAddress(domain).address;
+}
+
 export function sanitizeLocalPart(input: string): string {
   // Allow lowercase alphanumeric, dots, hyphens, and underscores
   return input

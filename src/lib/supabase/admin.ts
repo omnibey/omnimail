@@ -22,3 +22,8 @@ export function createAdminClient() {
     },
   });
 }
+
+export function getAdminClient() {
+  if (!isSupabaseAdminConfigured()) return null;
+  return createAdminClient();
+}

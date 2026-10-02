@@ -81,7 +81,7 @@ export const Navbar: React.FC = () => {
             </Button>
           </Link>
 
-          <Link href="/auth/login">
+          <Link href="/login">
             <Button variant="glow" size="sm">
               Sign In <ArrowRight className="w-3.5 h-3.5" />
             </Button>
@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
                 Dashboard
               </Button>
             </Link>
-            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
               <Button variant="glow" size="sm" className="w-full">
                 Sign In
               </Button>

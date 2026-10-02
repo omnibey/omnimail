@@ -5,6 +5,7 @@ import { HeroSection } from '@/components/marketing/HeroSection';
 import { InboxView } from '@/components/omnimail/InboxView';
 import { FeaturesGrid } from '@/components/marketing/FeaturesGrid';
 import { ArchitectureShowcase } from '@/components/marketing/ArchitectureShowcase';
+import { CompatibilityIntelligence } from '@/components/marketing/CompatibilityIntelligence';
 import { PricingTable } from '@/components/marketing/PricingTable';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 
@@ -57,6 +58,9 @@ export default function HomePage() {
 
       {/* Architecture & Pipeline Showcase */}
       <ArchitectureShowcase />
+
+      {/* Compatibility Intelligence Telemetry */}
+      <CompatibilityIntelligence />
 
       {/* Pricing Table */}
       <PricingTable />

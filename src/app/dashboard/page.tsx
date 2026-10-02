@@ -4,300 +4,284 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Inbox,
+  Mail,
   Key,
-  Shield,
-  Trash2,
-  Plus,
+  ShieldCheck,
+  Coins,
+  ArrowRight,
   Copy,
-  Layers,
+  Check,
+  RefreshCw,
+  Plus,
   Sparkles,
-  Cpu,
+  Zap,
+  Clock,
+  Send,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
-import { getLocalRecentMailboxes, removeLocalMailbox } from '@/lib/session/anonymous-session';
-import { nanoid } from 'nanoid';
+import { generateRandomAddress } from '@/lib/email/generator';
 
-export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState<'mailboxes' | 'api-keys' | 'settings'>('mailboxes');
-  const [mailboxes, setMailboxes] = useState<Array<{ address: string; id: string }>>([]);
-  const [apiKeys, setApiKeys] = useState<Array<{ id: string; name: string; key: string; createdAt: string }>>([
-    {
-      id: 'key_1',
-      name: 'CI/CD Playwright Tests',
-      key: 'ob_live_8f93a90b4e2348a',
-      createdAt: '2026-10-01',
-    },
-  ]);
-  const [newKeyName, setNewKeyName] = useState('');
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const { success } = useToast();
+export default function DashboardOverviewPage() {
+  const [currentEmail, setCurrentEmail] = useState('quickbox47@mail.omnibey.com');
+  const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(58 * 60); // 58 minutes
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { success, info } = useToast();
 
   useEffect(() => {
-    setMailboxes(getLocalRecentMailboxes());
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const handleCopyKey = (key: string) => {
-    navigator.clipboard.writeText(key);
-    success('API Key copied to clipboard');
+  const formatCountdown = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleCreateApiKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newKeyName.trim()) return;
-    const newKey = {
-      id: `key_${nanoid(8)}`,
-      name: newKeyName.trim(),
-      key: `ob_live_${nanoid(24)}`,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    setApiKeys([newKey, ...apiKeys]);
-    setNewKeyName('');
-    setShowKeyModal(false);
-    success(`API Key "${newKey.name}" created!`);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(currentEmail);
+    setCopied(true);
+    success('Email copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDeleteApiKey = (id: string) => {
-    setApiKeys(apiKeys.filter((k) => k.id !== id));
-    success('API key revoked');
+  const handleGenerate = () => {
+    setIsRefreshing(true);
+    const newAddress = generateRandomAddress('mail.omnibey.com');
+    setTimeout(() => {
+      setCurrentEmail(newAddress);
+      setTimeLeft(60 * 60);
+      setIsRefreshing(false);
+      success(`Generated new inbox: ${newAddress}`);
+    }, 250);
   };
 
-  const handleDeleteMailbox = (address: string) => {
-    removeLocalMailbox(address);
-    setMailboxes(getLocalRecentMailboxes());
-    success(`Removed mailbox ${address}`);
+  const handleExtend = () => {
+    setTimeLeft((prev) => prev + 3600);
+    success('Extended mailbox lifespan by +60 minutes');
   };
+
+  const stats = [
+    { label: 'Active Inboxes', value: '3', change: '+1 today', href: '/dashboard/emails', icon: Mail, color: 'text-indigo-500' },
+    { label: 'Received Messages', value: '28', change: '4 today', href: '/dashboard/inbox', icon: Inbox, color: 'text-sky-500' },
+    { label: 'Auto-Detected OTPs', value: '14', change: '100% accuracy', href: '/dashboard/inbox', icon: Zap, color: 'text-amber-500' },
+    { label: 'Credits Available', value: '250', change: 'Starter pack', href: '/dashboard/credits', icon: Coins, color: 'text-emerald-500' },
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1 animate-page-fade">
-      {/* Top Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-8 border-b border-slate-200 dark:border-slate-800">
+    <div className="space-y-8 animate-page-fade">
+      {/* Top Welcome Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">OmniBey Console</h1>
-            <Badge variant="purple">OmniMail Active</Badge>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Manage your temporary mailboxes, developer API credentials, and email routing settings on <code className="text-indigo-600 dark:text-sky-300 font-mono">mail.omnibey.com</code>.
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Welcome back to OmniMail
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Dynamic temporary mailboxes, instant OTP detection, and clean Cloudflare edge delivery.
           </p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <Link href="/">
+        <div className="flex items-center gap-2">
+          <Link href="/dashboard/inbox">
             <Button variant="glow" size="sm">
-              <Inbox className="w-4 h-4" /> Go to Live Inbox
+              <Inbox className="w-3.5 h-3.5" /> View Live Inbox
+            </Button>
+          </Link>
+          <Link href="/dashboard/payments">
+            <Button variant="secondary" size="sm">
+              <Coins className="w-3.5 h-3.5 text-amber-500" /> Add Credits
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span>Active Addresses</span>
-            <Layers className="w-4 h-4 text-indigo-500" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">{mailboxes.length || 1}</div>
-          <div className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-1 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active in current session
-          </div>
-        </div>
+      {/* Hero Mailbox Card (Section 6 Requirement) */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md relative overflow-hidden transition-colors">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span>Cloudflare Edge Routing</span>
-            <Cpu className="w-4 h-4 text-sky-500" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">&lt; 85ms</div>
-          <div className="text-[11px] text-sky-600 dark:text-sky-400 mt-1 font-medium">Average ingestion time</div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span>Security Layer</span>
-            <Shield className="w-4 h-4 text-emerald-500" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">RLS Active</div>
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">PostgreSQL isolated tables</div>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2">
-            <span>Subscription Plan</span>
-            <Sparkles className="w-4 h-4 text-amber-500" />
-          </div>
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">Free Tier</div>
-          <div className="text-[11px] text-indigo-600 dark:text-indigo-400 mt-1 font-semibold">
-            <Link href="/pricing" className="hover:underline">
-              Upgrade to Pro &rarr;
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 mb-6">
-        <button
-          onClick={() => setActiveTab('mailboxes')}
-          className={`pb-3 px-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2 cursor-pointer ${
-            activeTab === 'mailboxes'
-              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-white'
-              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-          }`}
-        >
-          <Inbox className="w-4 h-4" /> Mailboxes ({mailboxes.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('api-keys')}
-          className={`pb-3 px-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2 cursor-pointer ${
-            activeTab === 'api-keys'
-              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-500 dark:text-white'
-              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-          }`}
-        >
-          <Key className="w-4 h-4" /> API Keys ({apiKeys.length})
-        </button>
-      </div>
-
-      {/* Tab 1: Mailboxes */}
-      {activeTab === 'mailboxes' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Recent Active Mailboxes</h3>
-            <Link href="/">
-              <Button variant="secondary" size="sm">
-                <Plus className="w-3.5 h-3.5" /> Create Mailbox
-              </Button>
-            </Link>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800 shadow-xs">
-            {mailboxes.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
-                No mailboxes stored in this session yet.{' '}
-                <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                  Generate your first temporary address
-                </Link>
-              </div>
-            ) : (
-              mailboxes.map((mb) => (
-                <div key={mb.address} className="p-4 flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="text-sm font-mono font-medium text-slate-900 dark:text-white truncate">{mb.address}</div>
-                    <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
-                      <span>ID: {mb.id}</span>
-                      <span>&bull;</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Active</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Link href={`/?mailbox=${encodeURIComponent(mb.address)}`}>
-                      <Button variant="secondary" size="sm" className="text-xs">
-                        Open Inbox
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteMailbox(mb.address)}
-                      className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-8 w-8"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: API Keys */}
-      {activeTab === 'api-keys' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Developer REST API Keys</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Use these keys to authenticate automated E2E test suites</p>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-indigo-600 dark:text-sky-400 uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Current Temporary Email Address
             </div>
-            <Button variant="primary" size="sm" onClick={() => setShowKeyModal(true)}>
-              <Plus className="w-3.5 h-3.5" /> Generate Key
+            <div className="text-xl sm:text-2xl md:text-3xl font-extrabold font-mono text-slate-900 dark:text-white tracking-tight select-all">
+              {currentEmail}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              Incoming mail forwarded instantly via Cloudflare Edge Worker with zero persistent logs.
+            </p>
+          </div>
+
+          {/* Action Buttons & Countdown */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+              <Clock className="w-4 h-4 text-indigo-500" />
+              <div className="text-left">
+                <span className="text-[10px] text-slate-400 block leading-none">Expires In</span>
+                <span className="text-xs font-mono font-bold text-slate-900 dark:text-white">
+                  {formatCountdown(timeLeft)}
+                </span>
+              </div>
+              <button
+                onClick={handleExtend}
+                className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 font-bold"
+                title="Add 60 minutes"
+              >
+                +60m
+              </button>
+            </div>
+
+            <Button
+              variant="glow"
+              size="md"
+              onClick={handleCopy}
+              className={copied ? 'bg-emerald-600 text-white' : ''}
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied' : 'Copy'}
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={handleGenerate}
+              isLoading={isRefreshing}
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Generate New
             </Button>
           </div>
+        </div>
+      </div>
 
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800 shadow-xs">
-            {apiKeys.map((k) => (
-              <div key={k.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white">{k.name}</div>
-                  <div className="font-mono text-xs text-indigo-600 dark:text-sky-400 mt-1 bg-slate-100 dark:bg-slate-950 px-2 py-1 rounded-lg inline-block border border-slate-200 dark:border-slate-800">
-                    {k.key}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-1">Created on {k.createdAt}</div>
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs hover:border-indigo-500/50 hover:shadow-md transition-all group"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  {stat.label}
+                </span>
+                <div className={`p-2 rounded-xl bg-slate-100 dark:bg-slate-800 ${stat.color}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
+              </div>
+              <div className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                {stat.value}
+              </div>
+              <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+                <span>{stat.change}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:translate-x-1 group-hover:text-indigo-500 transition-transform" />
+              </div>
+            </Link>
+          );
+        })}
+      </div>
 
-                <div className="flex items-center gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => handleCopyKey(k.key)} className="text-xs">
-                    <Copy className="w-3 h-3" /> Copy
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteApiKey(k.id)}
-                    className="text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 h-8 w-8"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+      {/* Two Column Layout: Recent Activity & Quick Shortcuts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity List */}
+        <div className="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Recent Mailbox Activity</h3>
+            <Link href="/dashboard/history" className="text-xs text-indigo-600 dark:text-sky-400 hover:underline font-semibold">
+              View History
+            </Link>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              {
+                service: 'Discord Registration',
+                email: 'discord.flow84@mail.omnibey.com',
+                otp: '849201',
+                time: '12 minutes ago',
+              },
+              {
+                service: 'GitHub QA Automation',
+                email: 'qa.test92@mail.omnibey.com',
+                otp: '492810',
+                time: '45 minutes ago',
+              },
+              {
+                service: 'OpenAI Test Account',
+                email: 'verifybox82@mail.omnibey.com',
+                otp: '719234',
+                time: '2 hours ago',
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850"
+              >
+                <div className="truncate pr-3">
+                  <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    {item.service}
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-bold">
+                      OTP: {item.otp}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">
+                    {item.email}
+                  </div>
+                </div>
+                <div className="text-[11px] text-slate-400 whitespace-nowrap">
+                  {item.time}
                 </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Quick API usage snippet */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 font-mono text-xs shadow-xs">
-            <div className="text-slate-700 dark:text-slate-300 mb-2 font-sans font-semibold">Example cURL Request:</div>
-            <pre className="text-indigo-600 dark:text-sky-300 overflow-x-auto whitespace-pre">
-{`curl -X POST https://omnibey.com/api/mailboxes \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}
-            </pre>
+        {/* Quick Shortcuts */}
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white pb-3 border-b border-slate-100 dark:border-slate-800">
+            Quick Actions
+          </h3>
+          <div className="space-y-2.5">
+            <Link
+              href="/dashboard/inbox"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-colors text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              <span className="flex items-center gap-2">
+                <Inbox className="w-4 h-4 text-sky-500" /> Check Inbound Mail
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/dashboard/payments"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-colors text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              <span className="flex items-center gap-2">
+                <Coins className="w-4 h-4 text-amber-500" /> Manual Payment (bKash/Binance)
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
+
+            <Link
+              href="/dashboard/history"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 transition-colors text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
+              <span className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-emerald-500" /> Email History
+              </span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
           </div>
         </div>
-      )}
-
-      {/* Create Key Modal */}
-      {showKeyModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-          <form
-            onSubmit={handleCreateApiKey}
-            className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4 transition-colors"
-          >
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Create Developer API Key</h3>
-            <div>
-              <label className="text-xs text-slate-700 dark:text-slate-300 block mb-1 font-medium">Key Description / Purpose</label>
-              <input
-                type="text"
-                autoFocus
-                placeholder="e.g. Cypress E2E Email Verification"
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button type="button" variant="ghost" size="sm" onClick={() => setShowKeyModal(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" size="sm">
-                Generate Key
-              </Button>
-            </div>
-          </form>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
